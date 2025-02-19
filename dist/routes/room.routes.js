@@ -14,6 +14,7 @@ exports.router.get("/:id", room_controller_1.default.getRoomById);
 exports.router.put("/:id", room_controller_1.default.updateRoomById);
 exports.router.delete("/:id", room_controller_1.default.deleteRoomById);
 exports.router.post("/join/:room", userRoom_controller_1.default.joinRoom);
-exports.router.post("/leave/:room", userRoom_controller_1.default.joinRoom);
+exports.router.post("/leave/:room", userRoom_controller_1.default.leaveRoom);
+exports.router.get("/:room/user", userRoom_controller_1.default.getRoomMembers);
 exports.router.post("/:room/grant", userRoom_controller_1.default.grantRole);
 exports.default = exports.router;

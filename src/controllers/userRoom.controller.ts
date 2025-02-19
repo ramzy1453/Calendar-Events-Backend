@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import UserRoomService from "../services/userRoom.service";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/errors";
-import { createResponse } from "../utils/response";
+import CreateResponse from "../utils/response";
 import { MongooseError } from "mongoose";
 import { UserRoleEnum } from "../types/enums/enum";
 
@@ -13,16 +13,14 @@ export default class UserRoomController {
     const room = req.params.room;
     try {
       const result = await UserRoomService.joinRoom(user, room);
-      return createResponse(
+      return CreateResponse.successful(
         res,
         StatusCodes.CREATED,
         "User joined room",
         result
       );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -32,11 +30,14 @@ export default class UserRoomController {
     const room = req.params.room;
     try {
       const result = await UserRoomService.leaveRoom(user, room);
-      return createResponse(res, StatusCodes.OK, "User left room", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User left room",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -44,33 +45,29 @@ export default class UserRoomController {
     const user = req.user?._id.toString()!;
     try {
       const userRooms = await UserRoomService.getUserRooms(user);
-      return createResponse(
+      return CreateResponse.successful(
         res,
         StatusCodes.OK,
         "User rooms fetched",
         userRooms
       );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
-  static async getRoomUsers(req: Request, res: Response) {
+  static async getRoomMembers(req: Request, res: Response) {
     const room = req.params.room;
     try {
-      const roomUsers = await UserRoomService.getRoomUsers(room);
-      return createResponse(
+      const roomUsers = await UserRoomService.getRoomMembers(room);
+      return CreateResponse.successful(
         res,
         StatusCodes.OK,
         "Room users fetched",
         roomUsers
       );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -85,11 +82,14 @@ export default class UserRoomController {
         room,
         role as UserRoleEnum
       );
-      return createResponse(res, StatusCodes.OK, "fetched user room", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "fetched user room",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 }

@@ -6,7 +6,6 @@ const errors_1 = require("../utils/errors");
 const authMiddleware = (req, res, next) => {
     var _a;
     const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.token;
-    console.log({ ck: req.cookies });
     if (!token) {
         throw new errors_1.UnauthorizedError("Access denied. Please log in.");
     }

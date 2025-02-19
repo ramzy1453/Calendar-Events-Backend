@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ICreateEvent } from "../types/dto/event.dto";
 import EventService from "../services/event.service";
-import { createResponse } from "../utils/response";
+import CreateResponse from "../utils/response";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/errors";
 
@@ -12,11 +12,14 @@ export default class EventController {
     const room = req.params.id;
     try {
       const result = EventService.createEvent(room, user, event);
-      return createResponse(res, StatusCodes.CREATED, "Event created", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.CREATED,
+        "Event created",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -24,11 +27,14 @@ export default class EventController {
     const room = req.params.room;
     try {
       const events = EventService.getRoomEvents(room);
-      return createResponse(res, StatusCodes.OK, "Events fetched", events);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "Events fetched",
+        events
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -36,11 +42,14 @@ export default class EventController {
     const user = req.params.id;
     try {
       const events = EventService.getUserEvents(user);
-      return createResponse(res, StatusCodes.OK, "Events fetched", events);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "Events fetched",
+        events
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -48,11 +57,14 @@ export default class EventController {
     const id = req.params.id;
     try {
       const event = EventService.getEventById(id);
-      return createResponse(res, StatusCodes.OK, "Event fetched", event);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "Event fetched",
+        event
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -61,11 +73,14 @@ export default class EventController {
     const event = req.body;
     try {
       const updatedEvent = EventService.updateEventById(id, event);
-      return createResponse(res, StatusCodes.OK, "Event updated", updatedEvent);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "Event updated",
+        updatedEvent
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
@@ -73,11 +88,14 @@ export default class EventController {
     const id = req.params.id;
     try {
       const deletedEvent = EventService.deleteEventById(id);
-      return createResponse(res, StatusCodes.OK, "Event deleted", deletedEvent);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "Event deleted",
+        deletedEvent
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 }

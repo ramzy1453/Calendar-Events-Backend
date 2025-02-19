@@ -7,7 +7,6 @@ const roomSchema = new Schema<IRoom>(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     owner: {
       type: Schema.Types.ObjectId,

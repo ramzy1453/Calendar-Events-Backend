@@ -12,7 +12,9 @@ router.put("/:id", RoomController.updateRoomById);
 router.delete("/:id", RoomController.deleteRoomById);
 
 router.post("/join/:room", UserRoomController.joinRoom);
-router.post("/leave/:room", UserRoomController.joinRoom);
+router.post("/leave/:room", UserRoomController.leaveRoom);
+
+router.get("/:room/user", UserRoomController.getRoomMembers);
 
 router.post("/:room/grant", UserRoomController.grantRole);
 

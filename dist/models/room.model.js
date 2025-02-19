@@ -9,7 +9,6 @@ const roomSchema = new mongoose_1.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     owner: {
         type: mongoose_1.Schema.Types.ObjectId,

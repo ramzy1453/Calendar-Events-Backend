@@ -20,8 +20,8 @@ class UserRoomService {
             if (existingUserRoom) {
                 throw new Error("User already in room");
             }
-            const userRoom = yield userRoom_model_1.default.create({ user, room });
-            return userRoom;
+            yield userRoom_model_1.default.create({ user, room });
+            return null;
         });
     }
     static leaveRoom(user, room) {
@@ -30,20 +30,26 @@ class UserRoomService {
             if (!existingUserRoom) {
                 throw new Error("User not in room");
             }
-            const userRoom = yield userRoom_model_1.default.findOneAndDelete({ user, room });
-            return userRoom;
+            yield userRoom_model_1.default.findOneAndDelete({ user, room });
+            return null;
         });
     }
     static getUserRooms(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userRooms = yield userRoom_model_1.default.find({ user });
+            const userRooms = yield userRoom_model_1.default
+                .find({ user })
+                .select("-_id -user")
+                .populate("room");
             return userRooms;
         });
     }
-    static getRoomUsers(room) {
+    static getRoomMembers(room) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userRooms = yield userRoom_model_1.default.find({ room });
-            return userRooms;
+            const roomUsers = yield userRoom_model_1.default
+                .find({ room })
+                .select("-_id -room")
+                .populate("user");
+            return roomUsers;
         });
     }
     static grantRole(user, room, role) {

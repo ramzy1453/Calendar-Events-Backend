@@ -21,7 +21,7 @@ class RoomService {
             if (!room || !owner) {
                 throw new errors_1.BadRequestError("Room data must be provided");
             }
-            const newRoom = yield room_model_1.default.create({ owner, room });
+            const newRoom = yield room_model_1.default.create(Object.assign({ owner }, room));
             yield userRoom_service_1.default.joinRoom(owner, newRoom._id.toString());
             return newRoom;
         });

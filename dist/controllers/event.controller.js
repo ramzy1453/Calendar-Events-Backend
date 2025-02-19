@@ -13,9 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const event_service_1 = __importDefault(require("../services/event.service"));
-const response_1 = require("../utils/response");
+const response_1 = __importDefault(require("../utils/response"));
 const http_status_codes_1 = require("http-status-codes");
-const errors_1 = __importDefault(require("../utils/errors"));
 class EventController {
     static createEvent(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,12 +24,10 @@ class EventController {
             const room = req.params.id;
             try {
                 const result = event_service_1.default.createEvent(room, user, event);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.CREATED, "Event created", result);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.CREATED, "Event created", result);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -39,12 +36,10 @@ class EventController {
             const room = req.params.room;
             try {
                 const events = event_service_1.default.getRoomEvents(room);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Events fetched", events);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Events fetched", events);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -53,12 +48,10 @@ class EventController {
             const user = req.params.id;
             try {
                 const events = event_service_1.default.getUserEvents(user);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Events fetched", events);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Events fetched", events);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -66,12 +59,10 @@ class EventController {
         const id = req.params.id;
         try {
             const event = event_service_1.default.getEventById(id);
-            return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Event fetched", event);
+            return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Event fetched", event);
         }
         catch (error) {
-            if (error instanceof errors_1.default) {
-                return (0, response_1.createResponse)(res, error.statusCode, error.message);
-            }
+            response_1.default.error(res, error);
         }
     }
     static updateEventById(req, res) {
@@ -79,24 +70,20 @@ class EventController {
         const event = req.body;
         try {
             const updatedEvent = event_service_1.default.updateEventById(id, event);
-            return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Event updated", updatedEvent);
+            return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Event updated", updatedEvent);
         }
         catch (error) {
-            if (error instanceof errors_1.default) {
-                return (0, response_1.createResponse)(res, error.statusCode, error.message);
-            }
+            response_1.default.error(res, error);
         }
     }
     static deleteEventById(req, res) {
         const id = req.params.id;
         try {
             const deletedEvent = event_service_1.default.deleteEventById(id);
-            return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Event deleted", deletedEvent);
+            return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Event deleted", deletedEvent);
         }
         catch (error) {
-            if (error instanceof errors_1.default) {
-                return (0, response_1.createResponse)(res, error.statusCode, error.message);
-            }
+            response_1.default.error(res, error);
         }
     }
 }

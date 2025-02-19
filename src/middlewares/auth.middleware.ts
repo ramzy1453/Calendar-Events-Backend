@@ -10,7 +10,6 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   const token = req.cookies?.token;
-  console.log({ ck: req.cookies });
 
   if (!token) {
     throw new UnauthorizedError("Access denied. Please log in.");

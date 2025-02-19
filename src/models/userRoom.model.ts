@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IUserRoom } from "../types/models";
 import { UserRoleEnum } from "../types/enums/enum";
+import autoPopulatePlugin from "../utils/db";
 
 const userRoomSchema = new Schema<IUserRoom>(
   {

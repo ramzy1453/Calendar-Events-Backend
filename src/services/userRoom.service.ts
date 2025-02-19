@@ -9,8 +9,8 @@ export default class UserRoomService {
       throw new Error("User already in room");
     }
 
-    const userRoom = await userRoomModel.create({ user, room });
-    return userRoom;
+    await userRoomModel.create({ user, room });
+    return null;
   }
 
   static async leaveRoom(user: string, room: string) {
@@ -19,18 +19,24 @@ export default class UserRoomService {
       throw new Error("User not in room");
     }
 
-    const userRoom = await userRoomModel.findOneAndDelete({ user, room });
-    return userRoom;
+    await userRoomModel.findOneAndDelete({ user, room });
+    return null;
   }
 
   static async getUserRooms(user: string) {
-    const userRooms = await userRoomModel.find({ user });
+    const userRooms = await userRoomModel
+      .find({ user })
+      .select("-_id -user")
+      .populate("room");
     return userRooms;
   }
 
-  static async getRoomUsers(room: string) {
-    const userRooms = await userRoomModel.find({ room });
-    return userRooms;
+  static async getRoomMembers(room: string) {
+    const roomUsers = await userRoomModel
+      .find({ room })
+      .select("-_id -room")
+      .populate("user");
+    return roomUsers;
   }
 
   static async grantRole(user: string, room: string, role: UserRoleEnum) {

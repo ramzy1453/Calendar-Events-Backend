@@ -1,21 +1,37 @@
 import { Response } from "express";
+import AppError from "./errors";
+import { Mongoose, MongooseError } from "mongoose";
+import { StatusCodes } from "http-status-codes";
 
-export function createResponse<T>(
-  res: Response,
-  status: number,
-  message: string,
-  data?: T
-) {
-  if (data) {
+export default class CreateResponse {
+  static successful<T>(
+    res: Response,
+    status: number,
+    message: string,
+    data: T
+  ) {
     res.status(status).json({
-      success: status >= 200 && status < 300,
+      success: true,
       message,
       data,
     });
-  } else {
-    res.status(status).json({
-      success: status >= 200 && status < 300,
-      message,
-    });
+  }
+  static error(res: Response, err: unknown) {
+    if (err instanceof AppError) {
+      return res.status(err.statusCode).json({
+        success: false,
+        message: err.message,
+      });
+    } else if (err instanceof MongooseError) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: err.message,
+      });
+    } else {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: (err as any).message,
+      });
+    }
   }
 }

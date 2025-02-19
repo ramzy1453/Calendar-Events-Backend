@@ -14,8 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const userRoom_service_1 = __importDefault(require("../services/userRoom.service"));
 const http_status_codes_1 = require("http-status-codes");
-const errors_1 = __importDefault(require("../utils/errors"));
-const response_1 = require("../utils/response");
+const response_1 = __importDefault(require("../utils/response"));
 class UserRoomController {
     /************ POST *************/
     static joinRoom(req, res) {
@@ -25,12 +24,10 @@ class UserRoomController {
             const room = req.params.room;
             try {
                 const result = yield userRoom_service_1.default.joinRoom(user, room);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.CREATED, "User joined room", result);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.CREATED, "User joined room", result);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -42,12 +39,10 @@ class UserRoomController {
             const room = req.params.room;
             try {
                 const result = yield userRoom_service_1.default.leaveRoom(user, room);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "User left room", result);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "User left room", result);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -57,26 +52,22 @@ class UserRoomController {
             const user = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString();
             try {
                 const userRooms = yield userRoom_service_1.default.getUserRooms(user);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "User rooms fetched", userRooms);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "User rooms fetched", userRooms);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
-    static getRoomUsers(req, res) {
+    static getRoomMembers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const room = req.params.room;
             try {
-                const roomUsers = yield userRoom_service_1.default.getRoomUsers(room);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "Room users fetched", roomUsers);
+                const roomUsers = yield userRoom_service_1.default.getRoomMembers(room);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "Room users fetched", roomUsers);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }
@@ -88,12 +79,10 @@ class UserRoomController {
             const role = req.params.body;
             try {
                 const result = yield userRoom_service_1.default.grantRole(user, room, role);
-                return (0, response_1.createResponse)(res, http_status_codes_1.StatusCodes.OK, "fetched user room", result);
+                return response_1.default.successful(res, http_status_codes_1.StatusCodes.OK, "fetched user room", result);
             }
             catch (error) {
-                if (error instanceof errors_1.default) {
-                    return (0, response_1.createResponse)(res, error.statusCode, error.message);
-                }
+                response_1.default.error(res, error);
             }
         });
     }

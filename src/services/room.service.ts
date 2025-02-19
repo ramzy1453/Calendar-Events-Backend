@@ -8,7 +8,7 @@ export default class RoomService {
     if (!room || !owner) {
       throw new BadRequestError("Room data must be provided");
     }
-    const newRoom = await roomModel.create({ owner, room });
+    const newRoom = await roomModel.create({ owner, ...room });
 
     await UserRoomService.joinRoom(owner, newRoom._id.toString());
 

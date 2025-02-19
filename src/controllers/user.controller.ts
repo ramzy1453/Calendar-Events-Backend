@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createResponse } from "../utils/response";
+import CreateResponse from "../utils/response";
 import UserService from "../services/user.service";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/errors";
@@ -20,11 +20,14 @@ export default class UserController {
         maxAge: 1000 * 60 * 60 * 24 * 30,
       });
 
-      return createResponse(res, StatusCodes.CREATED, "User created", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.CREATED,
+        "User created",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
   /********************* POST **********************/
@@ -39,32 +42,42 @@ export default class UserController {
         secure: NODE_ENV === "production",
         maxAge: 1000 * 60 * 60 * 24 * 30,
       });
-      return createResponse(res, StatusCodes.OK, "User logged in", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User logged in",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
   /********************* POST **********************/
   static async verify(req: Request, res: Response) {
     const userId = req.user?._id.toString()!;
-    console.log({ userId });
 
     try {
       const result = await UserService.verify(userId);
-      return createResponse(res, StatusCodes.OK, "User verified", result);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User verified",
+        result
+      );
     } catch (error) {
-      if (error instanceof AppError) {
-        return createResponse(res, error.statusCode, error.message);
-      }
+      CreateResponse.error(res, error);
     }
   }
 
   /********************* POST **********************/
   static async logout(req: Request, res: Response) {
     res.clearCookie("token");
-    return createResponse(res, StatusCodes.OK, "User logged out");
+    return CreateResponse.successful(
+      res,
+      StatusCodes.OK,
+      "User logged out",
+      null
+    );
   }
 }
