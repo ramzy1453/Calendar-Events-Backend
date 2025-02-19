@@ -12,11 +12,13 @@ export default class EventService {
   }
 
   static async getRoomEvents(room: string) {
+    // todo : verify is the room belongs to one of the rooms of the user
     const events = await eventModel.find({ room });
     return events;
   }
 
   static async getUserEvents(user: string) {
+    // todo : verify that we share same room
     const events = await eventModel.find({ user });
     return events;
   }

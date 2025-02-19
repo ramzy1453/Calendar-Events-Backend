@@ -1,19 +1,27 @@
 import express, { Application } from "express";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
+
 import { connectDB, runServer } from "./config";
-import errorMiddleware from "./middlewares/error.middleware";
 import setupRoutes from "./routes";
+import { FRONTEND_URL } from "./config/env";
 const app: Application = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: [FRONTEND_URL],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 
 // Routes
 setupRoutes(app);
-app.use(errorMiddleware);
 
 // Run server and connect to database
 runServer(app);

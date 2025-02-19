@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IUserRoom } from "../types/models";
+import { UserRoleEnum } from "../types/enums/enum";
 
 const userRoomSchema = new Schema<IUserRoom>(
   {
@@ -15,7 +16,7 @@ const userRoomSchema = new Schema<IUserRoom>(
     },
     role: {
       type: String,
-      required: true,
+      default: UserRoleEnum.MEMBER,
     },
   },
   {

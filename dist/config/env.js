@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.REDIS_URL = exports.FRONTEND_URL = exports.JWT_EXPIRE = exports.JWT_SECRET = exports.VERSION = exports.DB_PASS = exports.DB_NAME = exports.DB_URL = exports.NODE_ENV = exports.PORT = exports.logsRoot = void 0;
+const path_1 = __importDefault(require("path"));
+const env_1 = __importDefault(require("../utils/env"));
+const CWD = process.cwd();
+console.log(`\n🔵 Current working directory: ${CWD}`);
+console.log(`Environment variables are loading... \n`);
+exports.logsRoot = path_1.default.join(CWD, "tmp");
+exports.PORT = (0, env_1.default)("PORT", "3000");
+exports.NODE_ENV = (0, env_1.default)("NODE_ENV", "development");
+exports.DB_URL = (0, env_1.default)("DB_URL", "mongodb://localhost:27017");
+exports.DB_NAME = (0, env_1.default)("DB_NAME", "mongo");
+exports.DB_PASS = (0, env_1.default)("DB_PASS", "mongo");
+exports.VERSION = (0, env_1.default)("VERSION", "v1");
+exports.JWT_SECRET = (0, env_1.default)("JWT_SECRET", "1234567");
+exports.JWT_EXPIRE = (0, env_1.default)("JWT_EXPIRE", "7d");
+exports.FRONTEND_URL = (0, env_1.default)("FRONTEND_URL", "http://localhost:3000");
+exports.REDIS_URL = (0, env_1.default)("REDIS_URL", "redis://localhost:6379");

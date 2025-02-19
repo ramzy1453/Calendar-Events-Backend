@@ -9,26 +9,18 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const token = req.cookies?.token;
+  const token = req.cookies?.token;
+  console.log({ ck: req.cookies });
 
-    if (!token) {
-      throw new UnauthorizedError("Access denied. Please log in.");
-    }
-
-    const payload = JwtUtils.verifyToken(token);
-    if (!payload) {
-      throw new UnauthorizedError("Access denied. Please log in.");
-    }
-
-    req.user = payload;
-    next();
-  } catch (error) {
-    console.error("Account middleware error:", error);
-    return createResponse(
-      res,
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      "An unexpected error occurred."
-    );
+  if (!token) {
+    throw new UnauthorizedError("Access denied. Please log in.");
   }
+
+  const payload = JwtUtils.verifyToken(token);
+  if (!payload) {
+    throw new UnauthorizedError("Access denied. Please log in.");
+  }
+
+  req.user = payload;
+  next();
 };

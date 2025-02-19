@@ -1,11 +1,17 @@
 import roomModel from "../models/room.model";
 import { ICreateRoom, IUpdateRoom } from "../types/dto/room.dto";
+import { BadRequestError } from "../utils/errors";
+import UserRoomService from "./userRoom.service";
 
 export default class RoomService {
   static async createRoom(owner: string, room: ICreateRoom) {
     if (!room || !owner) {
+      throw new BadRequestError("Room data must be provided");
     }
     const newRoom = await roomModel.create({ owner, room });
+
+    await UserRoomService.joinRoom(owner, newRoom._id.toString());
+
     return newRoom;
   }
 
@@ -16,6 +22,9 @@ export default class RoomService {
 
   static async getRoomById(id: string) {
     const room = await roomModel.findById(id);
+
+    // todo : verify if you are member of this room
+
     if (!room) {
       throw new Error("Room not found");
     }

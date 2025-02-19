@@ -10,7 +10,14 @@ export default class UserService {
     if (!user) {
       throw new NotFoundError("User not found");
     }
-    const newUser = await userModel.create(user);
+
+    const salt = await bcrypt.genSalt(12);
+
+    const hashedPassword = await bcrypt.hash(user.password, salt);
+    const newUser = await userModel.create({
+      ...user,
+      password: hashedPassword,
+    });
     const token = JwtUtils.generateToken({ _id: newUser._id });
 
     return { user: newUser, token };
@@ -33,13 +40,8 @@ export default class UserService {
     return { user, token };
   }
 
-  static async verifyToken(token: string) {
-    const payload = JwtUtils.verifyToken(token);
-    if (!payload) {
-      throw new NotFoundError("Invalid token");
-    }
-
-    const user = await userModel.findById(payload._id);
+  static async verify(userId: string) {
+    const user = await userModel.findById(userId);
     if (!user) {
       throw new NotFoundError("User not found");
     }

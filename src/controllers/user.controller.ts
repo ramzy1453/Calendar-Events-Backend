@@ -48,11 +48,12 @@ export default class UserController {
   }
 
   /********************* POST **********************/
-  static async verifyToken(req: Request, res: Response) {
-    const token: string = req.body.token;
+  static async verify(req: Request, res: Response) {
+    const userId = req.user?._id.toString()!;
+    console.log({ userId });
 
     try {
-      const result = await UserService.verifyToken(token);
+      const result = await UserService.verify(userId);
       return createResponse(res, StatusCodes.OK, "User verified", result);
     } catch (error) {
       if (error instanceof AppError) {
