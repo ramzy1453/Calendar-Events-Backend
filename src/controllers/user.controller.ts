@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { IUser } from "../types/models";
 import { createResponse } from "../utils/response";
 import UserService from "../services/user.service";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/errors";
 import { NODE_ENV } from "../config/env";
+import { IRegister } from "../types/dto/user.dto";
 
 export default class UserController {
   /********************* POST **********************/
   static async register(req: Request, res: Response) {
-    const user: IUser = req.body;
+    const user: IRegister = req.body;
 
     try {
       const result = await UserService.register(user);

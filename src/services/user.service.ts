@@ -3,14 +3,15 @@ import { IUser } from "../types/models";
 import { NotFoundError } from "../utils/errors";
 import bcrypt from "bcryptjs";
 import { JwtUtils } from "../utils/jwt";
+import { IRegister } from "../types/dto/user.dto";
 
 export default class UserService {
-  static async register(user: IUser) {
+  static async register(user: IRegister) {
     if (!user) {
       throw new NotFoundError("User not found");
     }
     const newUser = await userModel.create(user);
-    const token = JwtUtils.generateToken({ _id: user._id });
+    const token = JwtUtils.generateToken({ _id: newUser._id });
 
     return { user: newUser, token };
   }

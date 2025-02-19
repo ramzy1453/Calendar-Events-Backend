@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IRoom } from "../types/models";
+import autoPopulatePlugin from "../utils/db";
 
 const roomSchema = new Schema<IRoom>(
   {
@@ -19,5 +20,7 @@ const roomSchema = new Schema<IRoom>(
   }
 );
 
+roomSchema.plugin(autoPopulatePlugin);
 const roomModel = model<IRoom>("Room", roomSchema);
+
 export default roomModel;
