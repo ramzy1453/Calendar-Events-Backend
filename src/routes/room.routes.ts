@@ -16,6 +16,6 @@ router.post("/leave/:room", UserRoomController.leaveRoom);
 
 router.get("/:room/user", UserRoomController.getRoomMembers);
 
-router.post("/:room/grant", UserRoomController.grantRole);
+router.post("/:room/grant/:user", UserRoomController.grantRole);
 
 export default router;

@@ -12,6 +12,7 @@ export interface IUser {
 export interface IRoom {
   _id: Types.ObjectId;
   name: string;
+  description: string;
   owner: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -23,7 +24,7 @@ export interface IEvent {
   description: string;
   date: Date;
   room: Types.ObjectId;
-  user : Types.ObjectId;
+  user: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,7 +33,7 @@ export interface IUserRoom {
   _id: Types.ObjectId;
   user: Types.ObjectId;
   room: Types.ObjectId;
-  role: UserRoleEnum
+  role: UserRoleEnum;
   createdAt: Date;
   updatedAt: Date;
 }

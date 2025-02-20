@@ -72,7 +72,7 @@ export default class UserRoomController {
   }
 
   static async grantRole(req: Request, res: Response) {
-    const user = req.user?._id.toString()!;
+    const user = req.params.user;
     const room = req.params.room;
     const role = req.params.body;
 

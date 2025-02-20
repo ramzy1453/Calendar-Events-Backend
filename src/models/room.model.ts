@@ -13,6 +13,10 @@ const roomSchema = new Schema<IRoom>(
       ref: "User",
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

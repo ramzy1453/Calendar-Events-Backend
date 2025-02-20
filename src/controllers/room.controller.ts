@@ -8,12 +8,11 @@ import { ICreateRoom, IUpdateRoom } from "../types/dto/room.dto";
 
 export default class RoomController {
   static async createRoom(req: Request, res: Response) {
-    const name: string = req.body.name;
+    const room: ICreateRoom = req.body;
     const owner = req.user?._id.toString()!;
-    console.log({ owner });
 
     try {
-      const newRoom = await RoomService.createRoom(owner, { name });
+      const newRoom = await RoomService.createRoom(owner, room);
       return CreateResponse.successful(
         res,
         StatusCodes.CREATED,
