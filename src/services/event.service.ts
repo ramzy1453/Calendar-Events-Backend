@@ -23,7 +23,6 @@ export default class EventService {
     // todo : verify is the room belongs to one of the rooms of the user
 
     const events = await eventModel.find({ room }).populate("user");
-
     return events;
   }
 
