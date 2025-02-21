@@ -11,7 +11,6 @@ export default class RoomService {
     const newRoom = await roomModel.create({ owner, ...room });
 
     await UserRoomService.joinRoom(owner, newRoom._id.toString());
-
     return newRoom;
   }
 
