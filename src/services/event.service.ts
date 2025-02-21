@@ -1,19 +1,29 @@
 import eventModel from "../models/event.model";
 import { ICreateEvent } from "../types/dto/event.dto";
+import { BadRequestError, NotFoundError } from "../utils/errors";
 
 export default class EventService {
   static async createEvent(room: string, user: string, event: ICreateEvent) {
     if (!event || !room || !user) {
-      throw new Error("Event data is required");
+      throw new BadRequestError("Event data is required");
     }
     // todo : verify is the user is member of the room
-    const newEvent = await eventModel.create({ room, user, event });
+    const { date, name, description } = event;
+    const newEvent = await eventModel.create({
+      room,
+      user,
+      name,
+      description,
+      date: new Date(date),
+    });
     return newEvent;
   }
 
   static async getRoomEvents(room: string) {
     // todo : verify is the room belongs to one of the rooms of the user
-    const events = await eventModel.find({ room });
+
+    const events = await eventModel.find({ room }).populate("user");
+
     return events;
   }
 
@@ -25,7 +35,10 @@ export default class EventService {
 
   static async getEventById(id: string) {
     // todo : verify is the event belongs to one of the rooms of the user
-    const event = await eventModel.findOne({ _id: id });
+    const event = await eventModel.findOne({ _id: id }).populate("user");
+    if (!event) {
+      throw new NotFoundError("Event not found");
+    }
     return event;
   }
 

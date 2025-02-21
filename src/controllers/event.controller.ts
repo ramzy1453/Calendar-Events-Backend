@@ -9,9 +9,9 @@ export default class EventController {
   static async createEvent(req: Request, res: Response) {
     const event: ICreateEvent = req.body;
     const user = req.user?._id.toString()!;
-    const room = req.params.id;
+    const room = req.params.room;
     try {
-      const result = EventService.createEvent(room, user, event);
+      const result = await EventService.createEvent(room, user, event);
       return CreateResponse.successful(
         res,
         StatusCodes.CREATED,
@@ -26,7 +26,7 @@ export default class EventController {
   static async getRoomEvents(req: Request, res: Response) {
     const room = req.params.room;
     try {
-      const events = EventService.getRoomEvents(room);
+      const events = await EventService.getRoomEvents(room);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -41,7 +41,7 @@ export default class EventController {
   static async getUserEvents(req: Request, res: Response) {
     const user = req.params.id;
     try {
-      const events = EventService.getUserEvents(user);
+      const events = await EventService.getUserEvents(user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -53,10 +53,10 @@ export default class EventController {
     }
   }
 
-  static getEventById(req: Request, res: Response) {
+  static async getEventById(req: Request, res: Response) {
     const id = req.params.id;
     try {
-      const event = EventService.getEventById(id);
+      const event = await EventService.getEventById(id);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -68,11 +68,11 @@ export default class EventController {
     }
   }
 
-  static updateEventById(req: Request, res: Response) {
+  static async updateEventById(req: Request, res: Response) {
     const id = req.params.id;
     const event = req.body;
     try {
-      const updatedEvent = EventService.updateEventById(id, event);
+      const updatedEvent = await EventService.updateEventById(id, event);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -84,10 +84,10 @@ export default class EventController {
     }
   }
 
-  static deleteEventById(req: Request, res: Response) {
+  static async deleteEventById(req: Request, res: Response) {
     const id = req.params.id;
     try {
-      const deletedEvent = EventService.deleteEventById(id);
+      const deletedEvent = await EventService.deleteEventById(id);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,

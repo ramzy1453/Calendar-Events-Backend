@@ -4,7 +4,7 @@ import EventController from "../controllers/event.controller";
 
 export const router = Router();
 
-router.post("/", EventController.createEvent);
+router.post("/:room", EventController.createEvent);
 router.get("/:id", EventController.getEventById);
 router.get("/room/:room", EventController.getRoomEvents);
 router.get("/user/:id", EventController.getUserEvents);
