@@ -1,4 +1,4 @@
-import { FRONTEND_URL } from "../config/env";
+import { BACKEND_URL } from "../config/env";
 import userRoomModel from "../models/userRoom.model";
 import { UserRoleEnum } from "../types/enums/enum";
 import { NotFoundError } from "../utils/errors";
@@ -6,9 +6,11 @@ import { JwtUtils } from "../utils/jwt";
 
 export default class UserRoomService {
   static async generateMagicLink(roomId: string) {
-    const token = JwtUtils.generateToken({ roomId }, { expiresIn: "1h" });
+    // todo : you can only share room only if you are a member of it
 
-    return `${FRONTEND_URL}/join-room?url=${token}`;
+    const magicLink = JwtUtils.generateToken({ roomId }, { expiresIn: "1h" });
+
+    return `${BACKEND_URL}/room/join?magicLink=${magicLink}`;
   }
   static async joinRoom(user: string, room: string) {
     const existingUserRoom = await userRoomModel.findOne({ user, room });
@@ -31,11 +33,14 @@ export default class UserRoomService {
   }
 
   static async getUserRooms(user: string) {
-    const userRooms = await userRoomModel
+    const rooms = await userRoomModel
       .find({ user })
-      .select("-_id -user")
-      .populate("room");
-    return userRooms;
+      .populate({
+        path: "room",
+      })
+      .select("room")
+      .lean();
+    return rooms.map(({ room }) => room);
   }
 
   static async getRoomMembers(room: string) {

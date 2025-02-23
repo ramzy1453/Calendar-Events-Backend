@@ -7,8 +7,8 @@ export class JwtUtils {
   private static jwtSecret = JWT_SECRET as string;
   private static jwtExpire = JWT_EXPIRE as string;
 
-  static verifyToken(token: string) {
-    return jwt.verify(token, this.jwtSecret) as JwtPayload;
+  static verifyToken<T>(token: string) {
+    return jwt.verify(token, this.jwtSecret) as T;
   }
 
   static generateToken<T extends object>(

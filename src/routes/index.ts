@@ -9,7 +9,7 @@ import errorMiddleware from "../middlewares/error.middleware";
 export default function setupRoutes(app: Application) {
   const router = Router();
 
-  router.use("/:room", express.static("public"));
+  router.use("/", express.static("public"));
   router.use("/user", userRouter);
   router.use("/room", authMiddleware, roomRouter);
   router.use("/event", authMiddleware, eventRouter);

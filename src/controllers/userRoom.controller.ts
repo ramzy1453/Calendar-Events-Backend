@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
 import UserRoomService from "../services/userRoom.service";
 import { StatusCodes } from "http-status-codes";
-import AppError from "../utils/errors";
+import { BadRequestError } from "../utils/errors";
 import CreateResponse from "../utils/response";
 import { MongooseError } from "mongoose";
 import { UserRoleEnum } from "../types/enums/enum";
 import { JwtUtils } from "../utils/jwt";
+import { FRONTEND_URL } from "../config/env";
 
 export default class UserRoomController {
   /************ POST *************/
   static async generateMagicLink(req: Request, res: Response) {
     const { room } = req.params;
     try {
-      const link = await UserRoomService.generateMagicLink(room);
+      const magicLink = await UserRoomService.generateMagicLink(room);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
         "Magic link generated",
-        { link }
+        { magicLink }
       );
     } catch (error) {
       CreateResponse.error(res, error);
@@ -27,22 +28,17 @@ export default class UserRoomController {
   /************ POST *************/
 
   static async joinRoomWithMagicLink(req: Request, res: Response) {
-    const { url } = req.query;
+    const { magicLink } = req.query;
     const user = req.user?._id.toString()!;
 
     try {
-      if (!url) throw new AppError("Token is missing", StatusCodes.BAD_REQUEST);
+      if (!magicLink) throw new BadRequestError("Magic Link is missing");
 
-      const decoded: any = JwtUtils.verifyToken(url as string);
-      const roomId = decoded.roomId;
-
-      const result = await UserRoomService.joinRoom(user, roomId);
-      return CreateResponse.successful(
-        res,
-        StatusCodes.OK,
-        "User joined room via magic link",
-        result
+      const decoded = JwtUtils.verifyToken<{ roomId: string }>(
+        magicLink as string
       );
+      await UserRoomService.joinRoom(user, decoded.roomId);
+      res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}`);
     } catch (error) {
       CreateResponse.error(res, error);
     }
