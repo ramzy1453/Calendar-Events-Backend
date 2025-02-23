@@ -11,9 +11,16 @@ export class JwtUtils {
     return jwt.verify(token, this.jwtSecret) as JwtPayload;
   }
 
-  static generateToken(payload: JwtPayload) {
-    return jwt.sign(payload, this.jwtSecret, {
-      expiresIn: this.jwtExpire as StringValue,
-    });
+  static generateToken<T extends object>(
+    payload: T,
+    options?: jwt.SignOptions
+  ) {
+    return jwt.sign(
+      payload,
+      this.jwtSecret,
+      options || {
+        expiresIn: this.jwtExpire as StringValue,
+      }
+    );
   }
 }

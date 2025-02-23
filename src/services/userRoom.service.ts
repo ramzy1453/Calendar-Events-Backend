@@ -1,8 +1,15 @@
+import { FRONTEND_URL } from "../config/env";
 import userRoomModel from "../models/userRoom.model";
 import { UserRoleEnum } from "../types/enums/enum";
 import { NotFoundError } from "../utils/errors";
+import { JwtUtils } from "../utils/jwt";
 
 export default class UserRoomService {
+  static async generateMagicLink(roomId: string) {
+    const token = JwtUtils.generateToken({ roomId }, { expiresIn: "1h" });
+
+    return `${FRONTEND_URL}/join-room?url=${token}`;
+  }
   static async joinRoom(user: string, room: string) {
     const existingUserRoom = await userRoomModel.findOne({ user, room });
     if (existingUserRoom) {

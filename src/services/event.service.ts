@@ -22,7 +22,11 @@ export default class EventService {
   static async getRoomEvents(room: string) {
     // todo : verify is the room belongs to one of the rooms of the user
 
-    const events = await eventModel.find({ room }).populate("user");
+    const events = await eventModel
+      .find({ room })
+      .populate("user")
+      .populate({ path: "room", select: "name" });
+
     return events;
   }
 

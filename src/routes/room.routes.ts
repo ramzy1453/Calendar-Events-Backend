@@ -11,7 +11,12 @@ router.get("/:id", RoomController.getRoomById);
 router.put("/:id", RoomController.updateRoomById);
 router.delete("/:id", RoomController.deleteRoomById);
 
-router.post("/join/:room", UserRoomController.joinRoom);
+//joinRoomWithMagicLink
+//generateMagicLink
+
+router.get("/join/:room", UserRoomController.joinRoomWithMagicLink);
+router.post("/magic-link/:room", UserRoomController.generateMagicLink);
+
 router.post("/leave/:room", UserRoomController.leaveRoom);
 
 router.get("/:room/user", UserRoomController.getRoomMembers);
