@@ -38,7 +38,7 @@ export default class UserRoomController {
         magicLink as string
       );
       await UserRoomService.joinRoom(user, decoded.roomId);
-      res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}`);
+      res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}?joined=true`);
     } catch (error) {
       CreateResponse.error(res, error);
     }

@@ -1,7 +1,7 @@
+import { Types } from "mongoose";
 import { BACKEND_URL } from "../config/env";
 import userRoomModel from "../models/userRoom.model";
 import { UserRoleEnum } from "../types/enums/enum";
-import { NotFoundError } from "../utils/errors";
 import { JwtUtils } from "../utils/jwt";
 
 export default class UserRoomService {
@@ -33,14 +33,21 @@ export default class UserRoomService {
   }
 
   static async getUserRooms(user: string) {
-    const rooms = await userRoomModel
-      .find({ user })
-      .populate({
-        path: "room",
-      })
-      .select("room")
-      .lean();
-    return rooms.map(({ room }) => room);
+    const rooms = await userRoomModel.aggregate([
+      { $match: { user: new Types.ObjectId(user) } },
+      {
+        $lookup: {
+          from: "rooms",
+          localField: "room",
+          foreignField: "_id",
+          as: "room",
+        },
+      },
+      { $unwind: "$room" },
+      { $replaceRoot: { newRoot: "$room" } },
+    ]);
+
+    return rooms;
   }
 
   static async getRoomMembers(room: string) {
