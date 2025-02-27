@@ -3,10 +3,10 @@ import UserRoomService from "../services/userRoom.service";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError } from "../utils/errors";
 import CreateResponse from "../utils/response";
-import { MongooseError } from "mongoose";
 import { UserRoleEnum } from "../types/enums/enum";
 import { JwtUtils } from "../utils/jwt";
 import { FRONTEND_URL } from "../config/env";
+import EmailService from "../services/email.service";
 
 export default class UserRoomController {
   /************ POST *************/
@@ -37,8 +37,32 @@ export default class UserRoomController {
       const decoded = JwtUtils.verifyToken<{ roomId: string }>(
         magicLink as string
       );
-      await UserRoomService.joinRoom(user, decoded.roomId);
-      res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}?joined=true`);
+      try {
+        await UserRoomService.joinRoom(user, decoded.roomId);
+        res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}?joined=true`);
+      } catch {
+        res.redirect(`${FRONTEND_URL}/calendar/${decoded.roomId}`);
+      }
+    } catch (error) {
+      CreateResponse.error(res, error);
+    }
+  }
+
+  /************ POST *************/
+
+  static async inviteUser(req: Request, res: Response) {
+    const { room, email } = req.body;
+    const user = req.user?._id.toString()!;
+    try {
+      const magicLink = await UserRoomService.generateMagicLink(room);
+
+      await EmailService.sendEmail(email, "Invitation to join room", magicLink);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User invited to room",
+        null
+      );
     } catch (error) {
       CreateResponse.error(res, error);
     }

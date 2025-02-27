@@ -19,3 +19,6 @@ export const BACKEND_URL = checkEnv(
   "BACKEND_URL",
   "http://localhost:5000/api/v1"
 );
+
+export const EMAIL_USER = checkEnv("EMAIL_USER", "email");
+export const EMAIL_PASS = checkEnv("EMAIL_PASS", "password");

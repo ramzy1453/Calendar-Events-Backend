@@ -9,6 +9,7 @@ router.post("/", RoomController.createRoom);
 router.get("/", authMiddleware, UserRoomController.getUserRooms);
 
 router.get("/join", UserRoomController.joinRoomWithMagicLink);
+router.post("/invite", UserRoomController.inviteUser);
 router.get("/:id", RoomController.getRoomById);
 router.put("/:id", RoomController.updateRoomById);
 router.delete("/:id", RoomController.deleteRoomById);
