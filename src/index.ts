@@ -1,14 +1,19 @@
 import express, { Application } from "express";
 import cors from "cors";
+import http from "http";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import { connectDB, runServer } from "./config";
 import setupRoutes from "./routes";
 import { FRONTEND_URL } from "./config/env";
-import userRoomModel from "./models/userRoom.model";
-import userModel from "./models/user.model";
+import { initSocket } from "./config/socket";
+
 const app: Application = express();
+const server = http.createServer(app);
+
+// Init Web Socket server
+initSocket(server);
 
 // Middlewares
 app.use(express.json());
@@ -26,13 +31,5 @@ app.use(morgan("dev"));
 setupRoutes(app);
 
 // Run server and connect to database
-runServer(app);
+runServer(server);
 connectDB();
-
-async function main() {
-  const sharedRoom = await userModel.distinct("email", { name: "eren" });
-
-  console.log({ sharedRoom });
-}
-
-main();

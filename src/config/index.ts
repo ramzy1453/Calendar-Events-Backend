@@ -1,8 +1,9 @@
 import { Application } from "express";
 import mongoose from "mongoose";
 import { DB_URL, PORT } from "./env";
+import { Server } from "http";
 
-export async function runServer(app: Application) {
+export async function runServer(app: Application | Server) {
   app.listen(PORT, () => {
     console.log("✅ Server is running on port " + PORT);
   });

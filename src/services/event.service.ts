@@ -1,3 +1,4 @@
+import { getSocketInstance } from "../config/socket";
 import eventModel from "../models/event.model";
 import userRoomModel from "../models/userRoom.model";
 import { ICreateEvent } from "../types/dto/event.dto";
@@ -22,7 +23,12 @@ export default class EventService {
       description,
       date: new Date(date),
     });
-    return newEvent;
+
+    const populatedEvent = await newEvent.populate("user room");
+
+    const io = getSocketInstance();
+    io.emit("new_event", populatedEvent);
+    return populatedEvent;
   }
 
   static async getRoomEvents(room: string, user: string) {

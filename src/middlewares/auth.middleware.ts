@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { JwtUtils } from "../utils/jwt";
 import { UnauthorizedError } from "../utils/errors";
 import { JwtPayload } from "../types/global";
+import { Socket } from "socket.io";
 
 export const authMiddleware = (
   req: Request,
@@ -20,4 +21,24 @@ export const authMiddleware = (
 
   req.user = payload;
   next();
+};
+
+export const autheSocketMiddleware = (
+  socket: Socket,
+  next: (err?: any) => void
+) => {
+  const token =
+    socket.handshake.auth?.token || socket.handshake.headers.authorization;
+
+  if (!token) {
+    return next(new Error("Authentication error"));
+  }
+
+  try {
+    const payload = JwtUtils.verifyToken<JwtPayload>(token);
+    (socket as any).user = payload;
+    next();
+  } catch (error) {
+    return next(new Error("Invalid token"));
+  }
 };
