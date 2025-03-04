@@ -24,24 +24,11 @@ export default class RoomController {
     }
   }
 
-  static async getRooms(req: Request, res: Response) {
-    try {
-      const rooms = await RoomService.getRooms();
-      return CreateResponse.successful(
-        res,
-        StatusCodes.OK,
-        "Rooms fetched",
-        rooms
-      );
-    } catch (error) {
-      CreateResponse.error(res, error);
-    }
-  }
-
   static async getRoomById(req: Request, res: Response) {
     const id: string = req.params.id;
+    const user = req.user?._id.toString()!;
     try {
-      const room = await RoomService.getRoomById(id);
+      const room = await RoomService.getRoomById(id, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -55,8 +42,10 @@ export default class RoomController {
 
   static async deleteRoomById(req: Request, res: Response) {
     const id: string = req.params.id;
+    const user = req.user?._id.toString()!;
+
     try {
-      const room = await RoomService.deleteRoomById(id);
+      const room = await RoomService.deleteRoomById(id, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -71,8 +60,10 @@ export default class RoomController {
   static async updateRoomById(req: Request, res: Response) {
     const id: string = req.params.id;
     const room: IUpdateRoom = req.body;
+    const user = req.user?._id.toString()!;
+
     try {
-      const updatedRoom = await RoomService.updateRoomById(id, room);
+      const updatedRoom = await RoomService.updateRoomById(id, user, room);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,

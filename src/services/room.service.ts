@@ -1,6 +1,7 @@
 import roomModel from "../models/room.model";
+import userRoomModel from "../models/userRoom.model";
 import { ICreateRoom, IUpdateRoom } from "../types/dto/room.dto";
-import { BadRequestError } from "../utils/errors";
+import { BadRequestError, NotFoundError } from "../utils/errors";
 import UserRoomService from "./userRoom.service";
 
 export default class RoomService {
@@ -15,38 +16,45 @@ export default class RoomService {
     return newRoom;
   }
 
-  static async getRooms() {
-    const rooms = await roomModel.find({});
-    return rooms;
-  }
-
-  static async getRoomById(id: string) {
+  static async getRoomById(id: string, user: string) {
     const room = await roomModel.findById(id);
 
-    // todo : verify if you are member of this room
-
     if (!room) {
-      throw new Error("Room not found");
+      throw new NotFoundError("Room not found");
+    }
+
+    const userInRoom = await userRoomModel.find({ room: id, user });
+    if (!userInRoom) {
+      throw new NotFoundError("Room not found");
     }
 
     return room;
   }
 
-  static async deleteRoomById(id: string) {
+  static async deleteRoomById(id: string, user: string) {
     const room = await roomModel.findByIdAndDelete(id);
     if (!room) {
-      throw new Error("Room not found");
+      throw new NotFoundError("Room not found");
+    }
+
+    const userInRoom = await userRoomModel.find({ room: id, user });
+    if (!userInRoom) {
+      throw new NotFoundError("Room not found");
     }
 
     return room;
   }
 
-  static async updateRoomById(id: string, room: IUpdateRoom) {
+  static async updateRoomById(id: string, user: string, room: IUpdateRoom) {
     const updatedRoom = await roomModel.findByIdAndUpdate(id, room, {
       new: true,
     });
     if (!updatedRoom) {
-      throw new Error("Room not found");
+      throw new NotFoundError("Room not found");
+    }
+    const userInRoom = await userRoomModel.find({ room: id, user });
+    if (!userInRoom) {
+      throw new NotFoundError("Room not found");
     }
 
     return updatedRoom;

@@ -1,4 +1,5 @@
 import eventModel from "../models/event.model";
+import userRoomModel from "../models/userRoom.model";
 import { ICreateEvent } from "../types/dto/event.dto";
 import { BadRequestError, NotFoundError } from "../utils/errors";
 
@@ -7,7 +8,12 @@ export default class EventService {
     if (!event || !room || !user) {
       throw new BadRequestError("Event data is required");
     }
-    // todo : verify is the user is member of the room
+
+    const userInRoom = await userRoomModel.find({ user, room });
+    if (!userInRoom) {
+      throw new NotFoundError("Room not found");
+    }
+
     const { date, name, description } = event;
     const newEvent = await eventModel.create({
       room,
@@ -19,8 +25,11 @@ export default class EventService {
     return newEvent;
   }
 
-  static async getRoomEvents(room: string) {
-    // todo : verify is the room belongs to one of the rooms of the user
+  static async getRoomEvents(room: string, user: string) {
+    const userInRoom = await userRoomModel.find({ user, room });
+    if (!userInRoom) {
+      throw new NotFoundError("Room not found");
+    }
 
     const events = await eventModel
       .find({ room })
@@ -30,39 +39,67 @@ export default class EventService {
     return events;
   }
 
-  static async getUserEvents(user: string) {
-    // todo : verify that we share same room
-    const events = await eventModel.find({ user });
+  static async getUserEvents(id: string, user: string) {
+    const userRooms = await userRoomModel.distinct("room", { user: id });
+
+    const sharedRoom = await userRoomModel.findOne({
+      user: user,
+      room: { $in: userRooms },
+    });
+
+    if (!sharedRoom) {
+      throw new NotFoundError("Room not found");
+    }
+
+    const events = await eventModel.find({ user: id });
     return events;
   }
 
-  static async getEventById(id: string) {
-    // todo : verify is the event belongs to one of the rooms of the user
-    const event = await eventModel.findOne({ _id: id }).populate("user");
+  static async getEventById(id: string, user: string) {
+    const userRooms = await userRoomModel.distinct("room", { user });
+
+    const event = await eventModel
+      .findOne({ _id: id, room: { $in: userRooms } })
+      .populate("user");
+
     if (!event) {
-      throw new NotFoundError("Event not found");
+      throw new NotFoundError("Event not found or not accessible");
     }
+
     return event;
   }
 
-  static async updateEventById(id: string, event: ICreateEvent) {
-    // todo : verify is the event belongs to one of the rooms of the user
+  static async updateEventById(id: string, user: string, event: ICreateEvent) {
+    const userRooms = await userRoomModel.distinct("room", { user });
+
+    const existingEvent = await eventModel.findOne({
+      _id: id,
+      room: { $in: userRooms },
+    });
+
+    if (!existingEvent) {
+      throw new Error("Event not found or not accessible");
+    }
+
     const updatedEvent = await eventModel.findOneAndUpdate({ _id: id }, event, {
       new: true,
     });
-    if (!updatedEvent) {
-      throw new Error("Event not found");
-    }
 
     return updatedEvent;
   }
+  static async deleteEventById(id: string, user: string) {
+    const userRooms = await userRoomModel.distinct("room", { user });
 
-  static async deleteEventById(id: string) {
-    // todo : verify is the event belongs to one of the rooms of the user
-    const deletedEvent = await eventModel.findOneAndDelete({ _id: id });
-    if (!deletedEvent) {
-      throw new Error("Event not found");
+    const existingEvent = await eventModel.findOne({
+      _id: id,
+      room: { $in: userRooms },
+    });
+
+    if (!existingEvent) {
+      throw new Error("Event not found or not accessible");
     }
+
+    const deletedEvent = await eventModel.findOneAndDelete({ _id: id });
 
     return deletedEvent;
   }

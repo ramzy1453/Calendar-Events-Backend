@@ -25,8 +25,9 @@ export default class EventController {
 
   static async getRoomEvents(req: Request, res: Response) {
     const room = req.params.room;
+    const user = req.user?._id.toString()!;
     try {
-      const events = await EventService.getRoomEvents(room);
+      const events = await EventService.getRoomEvents(room, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -39,9 +40,11 @@ export default class EventController {
   }
 
   static async getUserEvents(req: Request, res: Response) {
-    const user = req.params.id;
+    const id = req.params.id;
+    const user = req.user?._id.toString()!;
+
     try {
-      const events = await EventService.getUserEvents(user);
+      const events = await EventService.getUserEvents(id, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -55,8 +58,10 @@ export default class EventController {
 
   static async getEventById(req: Request, res: Response) {
     const id = req.params.id;
+    const user = req.user?._id.toString()!;
+
     try {
-      const event = await EventService.getEventById(id);
+      const event = await EventService.getEventById(id, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -71,8 +76,10 @@ export default class EventController {
   static async updateEventById(req: Request, res: Response) {
     const id = req.params.id;
     const event = req.body;
+    const user = req.user?._id.toString()!;
+
     try {
-      const updatedEvent = await EventService.updateEventById(id, event);
+      const updatedEvent = await EventService.updateEventById(id, user, event);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
@@ -86,8 +93,10 @@ export default class EventController {
 
   static async deleteEventById(req: Request, res: Response) {
     const id = req.params.id;
+    const user = req.user?._id.toString()!;
+
     try {
-      const deletedEvent = await EventService.deleteEventById(id);
+      const deletedEvent = await EventService.deleteEventById(id, user);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
