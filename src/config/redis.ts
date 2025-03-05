@@ -1,12 +1,18 @@
 import { createClient } from "redis";
 import { REDIS_URL } from "./env";
 
-const redisClient = createClient({
-  url: REDIS_URL,
+export const redisClient = createClient({ url: REDIS_URL });
+export const redisPublisher = createClient({ url: REDIS_URL });
+export const redisSubscriber = createClient({ url: REDIS_URL });
+
+[redisClient, redisPublisher, redisSubscriber].forEach((client) => {
+  client.on("error", (err) => console.error("❌ Redis Error:", err));
 });
 
-redisClient.on("error", (err) => console.error("❌ Redis Error:", err));
-
-redisClient.connect().then(() => console.log("✅ Redis connected"));
+Promise.all([
+  redisClient.connect(),
+  redisPublisher.connect(),
+  redisSubscriber.connect(),
+]).then(() => console.log("✅ Redis connected"));
 
 export default redisClient;

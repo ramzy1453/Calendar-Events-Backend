@@ -1,4 +1,6 @@
+import { redisClient } from "../config/redis";
 import { getSocketInstance } from "../config/socket";
+import { publishNotification } from "../lib/notifications/publish";
 import eventModel from "../models/event.model";
 import userRoomModel from "../models/userRoom.model";
 import { ICreateEvent } from "../types/dto/event.dto";
@@ -25,6 +27,8 @@ export default class EventService {
     });
 
     const populatedEvent = await newEvent.populate("user room");
+
+    await publishNotification("new_event", populatedEvent);
 
     const io = getSocketInstance();
     io.emit("new_event", populatedEvent);

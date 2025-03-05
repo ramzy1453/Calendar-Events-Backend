@@ -23,7 +23,7 @@ export const authMiddleware = (
   next();
 };
 
-export const autheSocketMiddleware = (
+export const authSocketMiddleware = (
   socket: Socket,
   next: (err?: any) => void
 ) => {

@@ -1,7 +1,8 @@
 import { Server, Socket } from "socket.io";
 import http from "http";
 import { FRONTEND_URL } from "./env";
-import { autheSocketMiddleware } from "../middlewares/auth.middleware";
+import { redisSubscriber } from "./redis";
+import { authSocketMiddleware } from "../middlewares/auth.middleware";
 
 let io: Server;
 
@@ -14,13 +15,13 @@ export const initSocket = (server: http.Server) => {
     },
   });
 
-  //   io.use(autheSocketMiddleware);
+  // io.use(authSocketMiddleware);
 
   io.on("connection", (socket: Socket) => {
-    console.log(`User connected: ${socket.id}`);
+    console.log(`✅ User connected: ${socket.id}`);
 
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
+      console.log(`❌ User disconnected: ${socket.id}`);
     });
   });
 
@@ -29,7 +30,7 @@ export const initSocket = (server: http.Server) => {
 
 export const getSocketInstance = () => {
   if (!io) {
-    throw new Error("Socket.io is not initialized!");
+    throw new Error("❌ Socket.io is not initialized!");
   }
   return io;
 };

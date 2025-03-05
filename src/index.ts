@@ -8,12 +8,10 @@ import { connectDB, runServer } from "./config";
 import setupRoutes from "./routes";
 import { FRONTEND_URL } from "./config/env";
 import { initSocket } from "./config/socket";
+import { setupSubscriber } from "./lib/notifications/subscribe";
 
 const app: Application = express();
 const server = http.createServer(app);
-
-// Init Web Socket server
-initSocket(server);
 
 // Middlewares
 app.use(express.json());
@@ -30,6 +28,7 @@ app.use(morgan("dev"));
 // Routes
 setupRoutes(app);
 
-// Run server and connect to database
 runServer(server);
 connectDB();
+initSocket(server);
+// setupSubscriber();
