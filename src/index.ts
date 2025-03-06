@@ -8,7 +8,6 @@ import { connectDB, runServer } from "./config";
 import setupRoutes from "./routes";
 import { FRONTEND_URL } from "./config/env";
 import { initSocket } from "./config/socket";
-import { setupSubscriber } from "./lib/notifications/subscribe";
 
 const app: Application = express();
 const server = http.createServer(app);
