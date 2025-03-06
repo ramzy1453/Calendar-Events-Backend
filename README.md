@@ -70,7 +70,7 @@ npm run dev
  │   ├── routes/        # Express routes
  │   ├── services/      # Business logic
  │   ├── config/        # Configuration files (Redis, MongoDB, etc.)
- │   ├── middleware/    # Authentication & validation
+ │   ├── middlewares/    # Authentication & validation
  │   ├── utils/         # Utility functions
  │   ├── lib/           # Helper methods
  │   ├── index.ts       # Main app
