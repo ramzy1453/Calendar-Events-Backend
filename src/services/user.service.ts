@@ -1,9 +1,12 @@
 import userModel from "../models/user.model";
 import { IUser } from "../types/models";
-import { NotFoundError } from "../utils/errors";
+import { BadRequestError, NotFoundError } from "../utils/errors";
 import bcrypt from "bcryptjs";
 import { JwtUtils } from "../utils/jwt";
 import { IRegister } from "../types/dto/user.dto";
+import crypto from "crypto";
+import emailService from "./email.service";
+import redisClient from "../config/redis";
 
 export default class UserService {
   static async register(user: IRegister) {
@@ -47,5 +50,26 @@ export default class UserService {
     }
 
     return user;
+  }
+  static async sendOTP(email: string) {
+    const otp = crypto.randomInt(100000, 999999).toString();
+    await redisClient.setEx(`otp:${email}`, 60, otp);
+    await emailService.sendEmail(email, "Your OTP Code", otp);
+  }
+  static async verifyOTP(email: string, otp: string) {
+    const storedOtp = await redisClient.get(`otp:${email}`);
+    if (!storedOtp || storedOtp !== otp) {
+      throw new BadRequestError("Invalid or expired OTP");
+    }
+
+    await redisClient.del(`otp:${email}`);
+
+    const user = await userModel.findOne({ email });
+    const token = JwtUtils.generateToken({ _id: user?.id });
+
+    // Stock the session in Redis for 7 days
+    await redisClient.setEx(`session:${email}`, 604800, token);
+
+    return { user, token };
   }
 }

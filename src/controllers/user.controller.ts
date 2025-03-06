@@ -2,9 +2,13 @@ import { Request, Response } from "express";
 import CreateResponse from "../utils/response";
 import UserService from "../services/user.service";
 import { StatusCodes } from "http-status-codes";
-import AppError from "../utils/errors";
+import AppError, { BadRequestError, NotFoundError } from "../utils/errors";
 import { NODE_ENV } from "../config/env";
 import { IRegister } from "../types/dto/user.dto";
+import crypto from "crypto";
+import redisClient from "../config/redis";
+import emailService from "../services/email.service";
+import { resourceLimits } from "worker_threads";
 
 export default class UserController {
   /********************* POST **********************/
@@ -79,5 +83,48 @@ export default class UserController {
       "User logged out",
       null
     );
+  }
+
+  /********************* POST **********************/
+  static async sendOTP(req: Request, res: Response) {
+    const email: string = req.body.email;
+    if (!email) {
+      throw new NotFoundError("Email is required");
+    }
+
+    try {
+      await UserService.sendOTP(email);
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User verified",
+        null
+      );
+    } catch (error) {
+      CreateResponse.error(res, error);
+    }
+  }
+
+  /********************* POST **********************/
+  static async verifyOTP(req: Request, res: Response) {
+    const email: string = req.body.email;
+    const otp: string = req.body.otp;
+
+    try {
+      const result = await UserService.verifyOTP(email, otp);
+      res.cookie("token", result.token, {
+        httpOnly: true,
+        secure: NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+      });
+      return CreateResponse.successful(
+        res,
+        StatusCodes.OK,
+        "User logged in",
+        result
+      );
+    } catch (error) {
+      CreateResponse.error(res, error);
+    }
   }
 }

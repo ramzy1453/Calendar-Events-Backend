@@ -1,7 +1,6 @@
 import { Server, Socket } from "socket.io";
 import http from "http";
 import { FRONTEND_URL } from "./env";
-import { redisSubscriber } from "./redis";
 import { authSocketMiddleware } from "../middlewares/auth.middleware";
 
 let io: Server;
@@ -15,7 +14,7 @@ export const initSocket = (server: http.Server) => {
     },
   });
 
-  // io.use(authSocketMiddleware);
+  io.use(authSocketMiddleware);
 
   io.on("connection", (socket: Socket) => {
     console.log(`✅ User connected: ${socket.id}`);
