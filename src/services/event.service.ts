@@ -1,10 +1,12 @@
+import { FilterQuery } from "mongoose";
 import { redisClient } from "../config/redis";
 import { getSocketInstance } from "../config/socket";
 import { publishNotification } from "../lib/notifications/publish";
 import eventModel from "../models/event.model";
 import userRoomModel from "../models/userRoom.model";
-import { ICreateEvent } from "../types/dto/event.dto";
+import { ICreateEvent, IQueryEvent } from "../types/dto/event.dto";
 import { BadRequestError, NotFoundError } from "../utils/errors";
+import { IEvent } from "../types/models";
 
 export default class EventService {
   static async createEvent(room: string, user: string, event: ICreateEvent) {
@@ -35,16 +37,26 @@ export default class EventService {
     return populatedEvent;
   }
 
-  static async getRoomEvents(room: string, user: string) {
-    const userInRoom = await userRoomModel.find({ user, room });
+  static async getRoomEvents(room: string, user: string, query: IQueryEvent) {
+    const { start_date, end_date } = query;
+
+    const userInRoom = await userRoomModel.findOne({ user, room });
     if (!userInRoom) {
       throw new NotFoundError("Room not found");
     }
 
+    const filter: FilterQuery<IEvent> = { room };
+    if (start_date || end_date) {
+      filter.date = {};
+      if (start_date) filter.date.$gte = new Date(start_date);
+      if (end_date) filter.date.$lte = new Date(end_date);
+    }
+
     const events = await eventModel
-      .find({ room })
+      .find(filter)
       .populate("user")
-      .populate({ path: "room", select: "name" });
+      .populate({ path: "room", select: "name" })
+      .sort({ date: 1 });
 
     return events;
   }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ICreateEvent } from "../types/dto/event.dto";
+import { ICreateEvent, IQueryEvent } from "../types/dto/event.dto";
 import EventService from "../services/event.service";
 import CreateResponse from "../utils/response";
 import { StatusCodes } from "http-status-codes";
@@ -26,8 +26,9 @@ export default class EventController {
   static async getRoomEvents(req: Request, res: Response) {
     const room = req.params.room;
     const user = req.user?._id.toString()!;
+    const query: IQueryEvent = req.query;
     try {
-      const events = await EventService.getRoomEvents(room, user);
+      const events = await EventService.getRoomEvents(room, user, query);
       return CreateResponse.successful(
         res,
         StatusCodes.OK,
